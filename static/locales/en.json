@@ -1,0 +1,11 @@
+{
+  "Meta": {
+    "name": "Currency module",
+    "description": "Currency module"
+  },
+  "Error": {
+    "InvalidTotalTransactionAmountException": "Invalid total transaction amount exception",
+    "AccountNotFoundException": "{{ type }} account of user {{ userId }} isn't found",
+    "InsufficientBalanceException": "{{ type }} account of user {{ userId }} doesn't have sufficient balance"
+  }
+}

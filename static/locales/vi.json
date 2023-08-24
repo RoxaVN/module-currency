@@ -1,0 +1,11 @@
+{
+  "Meta": {
+    "name": "Module tiền tệ",
+    "description": "Module tiền tệ"
+  },
+  "Error": {
+    "InvalidTotalTransactionAmountException": "Tổng số tiền giao dịch không hợp lệ",
+    "AccountNotFoundException": "Không tìm thấy tài khoản {{ type }} của người dùng {{ userId }}",
+    "InsufficientBalanceException": "Tài khoản {{ type }} của người dùng {{ userId }} không đủ số dư"
+  }
+}
