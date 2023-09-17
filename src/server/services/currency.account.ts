@@ -37,18 +37,6 @@ export class GetCurrencyAccountService extends InjectDatabaseService {
   }
 }
 
-@serverModule.injectable()
-export class GetAllCurrencyAccountsService extends InjectDatabaseService {
-  async handle(request: { userId?: string; currencyId: string }) {
-    return this.entityManager.getRepository(CurrencyAccount).find({
-      where: {
-        userId: request.userId,
-        currencyId: request.currencyId,
-      },
-    });
-  }
-}
-
 @serverModule.useApi(currencyAccountApi.getMany)
 export class GetCurrencyAccountsApiService extends InjectDatabaseService {
   async handle(request: InferApiRequest<typeof currencyAccountApi.getMany>) {
@@ -58,6 +46,10 @@ export class GetCurrencyAccountsApiService extends InjectDatabaseService {
     const [items, totalItems] = await this.entityManager
       .getRepository(CurrencyAccount)
       .findAndCount({
+        where: {
+          userId: request.userId,
+          currencyId: request.currencyId,
+        },
         take: pageSize,
         skip: (page - 1) * pageSize,
       });

@@ -8,7 +8,9 @@ export const scopes = accessManager.makeScopes(baseModule, {
 });
 
 export const permissions = accessManager.makePermissions(scopes, {
-  ReadCurrencyAccounts: {},
+  ReadCurrencyAccounts: {
+    allowedScopes: [accessManager.scopes.Owner],
+  },
   ReadAccountTransactions: {
     allowedScopes: [
       accessManager.scopes.ResourceOwner(scopes.CurrencyAccount.name),
