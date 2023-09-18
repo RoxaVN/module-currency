@@ -80,9 +80,8 @@ export class CreateTransactionService extends InjectDatabaseService {
     await this.entityManager.save(transaction);
 
     await this.entityManager
-      .createQueryBuilder()
+      .createQueryBuilder(AccountTransaction, 'accountTransaction')
       .insert()
-      .into(AccountTransaction)
       .values(
         requestAccounts.map((account) => ({
           accountId: account.id,
