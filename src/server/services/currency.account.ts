@@ -1,5 +1,6 @@
 import { InferApiRequest, NotFoundException } from '@roxavn/core/base';
 import { InjectDatabaseService } from '@roxavn/core/server';
+import { In } from 'typeorm';
 
 import { serverModule } from '../module.js';
 import { CurrencyAccount } from '../entities/index.js';
@@ -47,7 +48,7 @@ export class GetCurrencyAccountsApiService extends InjectDatabaseService {
       .getRepository(CurrencyAccount)
       .findAndCount({
         where: {
-          userId: request.userId,
+          userId: request.userIds ? In(request.userIds) : request.userId,
           currencyId: request.currencyId,
         },
         take: pageSize,

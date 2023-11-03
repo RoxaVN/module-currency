@@ -5,6 +5,7 @@ import {
   Max,
   Min,
   MinLength,
+  TransformArray,
   TransformNumber,
 } from '@roxavn/core/base';
 
@@ -32,6 +33,10 @@ export class GetCurrencyAccountsRequest extends ExactProps<GetCurrencyAccountsRe
   @MinLength(1)
   @IsOptional()
   public readonly userId?: string;
+
+  @TransformArray()
+  @IsOptional()
+  public readonly userIds?: string[];
 
   @MinLength(1)
   @IsOptional()
