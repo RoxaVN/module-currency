@@ -13,6 +13,7 @@ export class CreateCurrencyAccountService extends InjectDatabaseService {
     currencyId: string;
     type?: string;
     minBalance?: number;
+    maxBalance?: number;
   }) {
     const currencyAccount = new CurrencyAccount();
     Object.assign(currencyAccount, request);
