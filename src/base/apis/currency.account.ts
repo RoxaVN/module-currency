@@ -18,7 +18,8 @@ export interface CurrencyAccountResponse {
   currencyId: string;
   type: string;
   balance: number;
-  minBalance: number;
+  minBalance?: number;
+  maxBalance?: number;
   metadata?: any;
   createdDate: Date;
   updatedDate: Date;

@@ -36,8 +36,22 @@ export class CurrencyAccount {
   @Column({ type: 'decimal', precision: 78, scale: 0, default: 0 })
   balance: number;
 
-  @Column({ type: 'decimal', precision: 78, scale: 0, default: 0 })
-  minBalance: number;
+  @Column({
+    type: 'decimal',
+    precision: 78,
+    scale: 0,
+    default: 0,
+    nullable: true,
+  })
+  minBalance?: number;
+
+  @Column({
+    type: 'decimal',
+    precision: 78,
+    scale: 0,
+    nullable: true,
+  })
+  maxBalance?: number;
 
   @Column({ type: 'jsonb', nullable: true })
   metadata?: any;

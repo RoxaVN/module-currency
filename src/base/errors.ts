@@ -42,3 +42,12 @@ export class InsufficientBalanceException extends BadRequestException {
     this.i18n.default.params = { userId, type };
   }
 }
+
+export class ExceedBalanceException extends InsufficientBalanceException {
+  i18n = {
+    default: {
+      key: 'Error.ExceedBalanceException',
+      ns: baseModule.escapedName,
+    } as I18nErrorField,
+  };
+}

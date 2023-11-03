@@ -10,6 +10,7 @@ import {
 } from '../entities/index.js';
 import {
   AccountNotFoundException,
+  ExceedBalanceException,
   InsufficientBalanceException,
   InvalidTotalTransactionAmountException,
 } from '../../base/index.js';
@@ -64,8 +65,11 @@ export class CreateTransactionService extends InjectDatabaseService {
       );
       if (account) {
         account.balance += requestAccount.amount;
-        if (account.balance < account.minBalance) {
+        if (account.minBalance && account.balance < account.minBalance) {
           throw new InsufficientBalanceException(account.userId, account.type);
+        }
+        if (account.maxBalance && account.balance > account.maxBalance) {
+          throw new ExceedBalanceException(account.userId, account.type);
         }
         requestAccount.id = account.id;
       }
