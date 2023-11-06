@@ -6,12 +6,11 @@ import { Currency } from '../entities/index.js';
 
 @serverModule.injectable()
 export class CreateCurrencyService extends InjectDatabaseService {
-  async handle(request: { symbol: string; name: string }) {
+  async handle(request: { symbol: string; name: string; id?: string }) {
     const currency = new Currency();
-    currency.symbol = request.symbol;
-    currency.name = request.name;
+    Object.assign(currency, request);
 
-    await this.entityManager.save(currency);
+    await this.entityManager.getRepository(Currency).insert(currency);
     return { id: currency.id };
   }
 }
