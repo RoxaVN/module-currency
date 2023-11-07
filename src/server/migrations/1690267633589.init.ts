@@ -56,10 +56,10 @@ export class InitModuleCurrency1690267633589 implements MigrationInterface {
         "id" BIGSERIAL NOT NULL,
         "symbol" character varying(64) NOT NULL,
         "name" character varying(64) NOT NULL,
-        "fullName" text NOT NULL,
-        "unitLabel" character varying(64) NOT NULL,
-        "subunitLabel" character varying(64) NOT NULL,
-        "decimalPlaces" integer NOT NULL,
+        "fullName" text,
+        "unitLabel" character varying(64),
+        "subunitLabel" character varying(64),
+        "decimalPlaces" integer NOT NULL DEFAULT 0,
         "metadata" jsonb,
         CONSTRAINT "PK_3cda65c731a6264f0e444cc9b91" PRIMARY KEY ("id")
       )

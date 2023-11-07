@@ -20,16 +20,16 @@ export class Currency {
   @Column('varchar', { length: 64 })
   name: string;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   fullName: string;
 
-  @Column('varchar', { length: 64 })
+  @Column('varchar', { length: 64, nullable: true })
   unitLabel: string;
 
-  @Column('varchar', { length: 64 })
+  @Column('varchar', { length: 64, nullable: true })
   subunitLabel: string;
 
-  @Column('integer')
+  @Column('integer', { default: 0 })
   decimalPlaces: number;
 
   @Column({ type: 'jsonb', nullable: true })
