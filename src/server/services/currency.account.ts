@@ -11,8 +11,8 @@ export class CreateCurrencyAccountService extends InjectDatabaseService {
   async handle(request: {
     userId: string;
     currencyId: string;
+    minBalance: number | null;
     type?: string;
-    minBalance?: number;
     maxBalance?: number;
   }) {
     const currencyAccount = new CurrencyAccount();
