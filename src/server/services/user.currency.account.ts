@@ -24,7 +24,7 @@ export class GetOrCreateUserCurrencyAccountsApiService extends InjectDatabaseSer
         const account = new CurrencyAccount();
         account.userId = request.userId;
         account.currencyId = currencyId;
-        account.minBalance = 0;
+        account.minBalance = '0';
         newAccounts.push(account);
       }
     }

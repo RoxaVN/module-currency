@@ -24,12 +24,13 @@ export class CreateTransactionService extends InjectDatabaseService {
     metadata?: Record<string, any>;
     accounts: Array<{
       userId: string;
-      amount: number;
+      amount: number | bigint;
       type?: string;
     }>;
   }) {
     const total = sum(request.accounts.map((acc) => acc.amount));
-    if (total !== 0) {
+    // convert bigint to string
+    if (total.toString() !== '0') {
       throw new InvalidTotalTransactionAmountException();
     }
 
@@ -64,7 +65,9 @@ export class CreateTransactionService extends InjectDatabaseService {
           a.userId === requestAccount.userId && a.type === requestAccount.type
       );
       if (account) {
-        account.balance += requestAccount.amount;
+        account.balance = (
+          BigInt(account.balance) + BigInt(requestAccount.amount)
+        ).toString();
         if (account.minBalance && account.balance < account.minBalance) {
           throw new InsufficientBalanceException(account.userId, account.type);
         }
@@ -72,11 +75,12 @@ export class CreateTransactionService extends InjectDatabaseService {
           throw new ExceedBalanceException(account.userId, account.type);
         }
         requestAccount.id = account.id;
+      } else {
+        throw new AccountNotFoundException(
+          requestAccount.userId,
+          requestAccount.type
+        );
       }
-      throw new AccountNotFoundException(
-        requestAccount.userId,
-        requestAccount.type
-      );
     }
     const transaction = new Transaction();
     Object.assign(transaction, request);
@@ -90,13 +94,13 @@ export class CreateTransactionService extends InjectDatabaseService {
         requestAccounts.map((account) => ({
           accountId: account.id,
           transactionId: transaction.id,
-          amount: account.amount,
+          amount: account.amount.toString(),
           currencyId: request.currencyId,
         }))
       )
       .execute();
 
     // update balance of accounts
-    this.entityManager.save(accounts);
+    await this.entityManager.getRepository(CurrencyAccount).save(accounts);
   }
 }

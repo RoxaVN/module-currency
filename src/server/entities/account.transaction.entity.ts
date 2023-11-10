@@ -31,7 +31,7 @@ export class AccountTransaction {
   transaction: Relation<Transaction>;
 
   @Column({ type: 'decimal', precision: 78, scale: 0, default: 0 })
-  amount: number;
+  amount: string;
 
   @Column('bigint')
   currencyId: string;

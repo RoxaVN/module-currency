@@ -14,7 +14,7 @@ import { scopes, permissions } from '../access.js';
 const accountTransactionSource = new ApiSource<{
   id: string;
   accountId: string;
-  amount: number;
+  amount: string;
   currencyId: string;
   createdDate: Date;
   transactionId: string;
