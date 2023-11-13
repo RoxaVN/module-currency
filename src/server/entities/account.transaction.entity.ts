@@ -21,7 +21,7 @@ export class AccountTransaction {
   @ManyToOne(() => CurrencyAccount, (account) => account.accountTransactions)
   account: Relation<CurrencyAccount>;
 
-  @Column('uuid')
+  @Column('bigint')
   transactionId: string;
 
   @ManyToOne(

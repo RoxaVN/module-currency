@@ -15,7 +15,7 @@ import { AccountTransaction } from './account.transaction.entity.js';
 export class Transaction {
   static TYPE_DEFAULT = 'default';
 
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
   id: string;
 
   @Index({ unique: true })

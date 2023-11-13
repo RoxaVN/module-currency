@@ -1,12 +1,12 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InitModuleCurrency1690267633589 implements MigrationInterface {
-  name = 'InitModuleCurrency1690267633589';
+export class InitModuleCurrency1692112506538 implements MigrationInterface {
+  name = 'InitModuleCurrency1692112506538';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       CREATE TABLE "transaction" (
-        "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+        "id" BIGSERIAL NOT NULL,
         "originalTransactionId" character varying(1024),
         "type" character varying(64) NOT NULL DEFAULT 'default',
         "currencyId" bigint NOT NULL,
@@ -22,7 +22,7 @@ export class InitModuleCurrency1690267633589 implements MigrationInterface {
       CREATE TABLE "account_transaction" (
         "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
         "accountId" uuid NOT NULL,
-        "transactionId" uuid NOT NULL,
+        "transactionId" bigint NOT NULL,
         "amount" numeric(78, 0) NOT NULL DEFAULT '0',
         "currencyId" bigint NOT NULL,
         "metadata" jsonb,
