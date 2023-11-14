@@ -1,10 +1,19 @@
 import { InferApiRequest } from '@roxavn/core/base';
-import { InjectDatabaseService } from '@roxavn/core/server';
+import {
+  BaseService,
+  InjectDatabaseService,
+  inject,
+} from '@roxavn/core/server';
+import {
+  CreateUserApiService,
+  GetUsersApiService,
+} from '@roxavn/module-user/server';
 import { In } from 'typeorm';
 
 import { userCurrencyAccountApi } from '../../base/index.js';
 import { serverModule } from '../module.js';
 import { CurrencyAccount } from '../entities/index.js';
+import { CreateCurrencyAccountService } from './currency.account.js';
 
 @serverModule.useApi(userCurrencyAccountApi.getOrCreateMany)
 export class GetOrCreateUserCurrencyAccountsApiService extends InjectDatabaseService {
@@ -36,5 +45,43 @@ export class GetOrCreateUserCurrencyAccountsApiService extends InjectDatabaseSer
     }
 
     return { items };
+  }
+}
+
+@serverModule.injectable()
+export class CreateUserAndCurrencyAccountsService extends BaseService {
+  constructor(
+    @inject(CreateUserApiService)
+    public createUserApiService: CreateUserApiService,
+    @inject(GetUsersApiService)
+    public getUsersApiService: GetUsersApiService,
+    @inject(CreateCurrencyAccountService)
+    public createCurrencyAccountService: CreateCurrencyAccountService
+  ) {
+    super();
+  }
+
+  async handle(request: {
+    username: string;
+    currencyIds: string[];
+    minBalance?: number;
+  }) {
+    const { items } = await this.getUsersApiService.handle({
+      username: request.username,
+    });
+    if (!items.length) {
+      const user = await this.createUserApiService.handle({
+        username: request.username,
+      });
+      await Promise.all(
+        request.currencyIds.map((CurrencyId) =>
+          this.createCurrencyAccountService.handle({
+            userId: user.id,
+            currencyId: CurrencyId,
+            minBalance: request.minBalance || null,
+          })
+        )
+      );
+    }
   }
 }
