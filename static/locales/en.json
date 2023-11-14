@@ -2,8 +2,8 @@
   "currencyId": "Currency id",
   "exchangeRate": "Exchange rate",
   "Meta": {
-    "name": "Currency module",
-    "description": "Currency module"
+    "name": "Currency",
+    "description": "Currency"
   },
   "Error": {
     "InvalidTotalTransactionAmountException": "Invalid total transaction amount exception",
