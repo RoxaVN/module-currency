@@ -1,4 +1,6 @@
 {
+  "currencyId": "Id tiền tệ",
+  "exchangeRate": "Tỷ giá",
   "Meta": {
     "name": "Module tiền tệ",
     "description": "Module tiền tệ"

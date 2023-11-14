@@ -1,4 +1,6 @@
 {
+  "currencyId": "Currency id",
+  "exchangeRate": "Exchange rate",
   "Meta": {
     "name": "Currency module",
     "description": "Currency module"
