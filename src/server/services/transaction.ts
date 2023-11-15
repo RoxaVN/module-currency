@@ -39,6 +39,8 @@ export class CreateTransactionService extends InjectDatabaseService {
       amount: item.amount,
       type: item.type || CurrencyAccount.TYPE_DEFAULT,
       id: '',
+      newBalance: '',
+      oldBalance: '',
     }));
     requestAccounts = uniqWith(
       requestAccounts,
@@ -65,6 +67,7 @@ export class CreateTransactionService extends InjectDatabaseService {
           a.userId === requestAccount.userId && a.type === requestAccount.type
       );
       if (account) {
+        requestAccount.oldBalance = account.balance;
         account.balance = (
           BigInt(account.balance) + BigInt(requestAccount.amount)
         ).toString();
@@ -75,6 +78,7 @@ export class CreateTransactionService extends InjectDatabaseService {
           throw new ExceedBalanceException(account.userId, account.type);
         }
         requestAccount.id = account.id;
+        requestAccount.newBalance = account.balance;
       } else {
         throw new AccountNotFoundException(
           requestAccount.userId,
@@ -87,7 +91,7 @@ export class CreateTransactionService extends InjectDatabaseService {
 
     await this.entityManager.save(transaction);
 
-    await this.entityManager
+    const result = await this.entityManager
       .createQueryBuilder(AccountTransaction, 'accountTransaction')
       .insert()
       .values(
@@ -98,9 +102,12 @@ export class CreateTransactionService extends InjectDatabaseService {
           currencyId: request.currencyId,
         }))
       )
+      .returning(['id', 'accountId'])
       .execute();
 
     // update balance of accounts
     await this.entityManager.getRepository(CurrencyAccount).save(accounts);
+
+    return result.raw;
   }
 }

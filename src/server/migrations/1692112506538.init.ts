@@ -24,6 +24,8 @@ export class InitModuleCurrency1692112506538 implements MigrationInterface {
         "accountId" uuid NOT NULL,
         "transactionId" bigint NOT NULL,
         "amount" numeric(78, 0) NOT NULL DEFAULT '0',
+        "oldBalance" numeric(78, 0) NOT NULL,
+        "newBalance" numeric(78, 0) NOT NULL,
         "currencyId" bigint NOT NULL,
         "metadata" jsonb,
         "createdDate" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

@@ -33,6 +33,12 @@ export class AccountTransaction {
   @Column({ type: 'decimal', precision: 78, scale: 0, default: 0 })
   amount: string;
 
+  @Column({ type: 'decimal', precision: 78, scale: 0 })
+  oldBalance: string;
+
+  @Column({ type: 'decimal', precision: 78, scale: 0 })
+  newBalance: string;
+
   @Column('bigint')
   currencyId: string;
 
