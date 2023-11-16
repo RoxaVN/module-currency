@@ -7,7 +7,8 @@
   },
   "Error": {
     "InvalidTotalTransactionAmountException": "Tổng số tiền giao dịch không hợp lệ",
-    "AccountNotFoundException": "Không tìm thấy tài khoản {{ type }} của người dùng {{ userId }}",
+    "UserAccountNotFoundException": "Không tìm thấy tài khoản {{ type }} của người dùng {{ userId }}",
+    "AccountNotFoundException": "Không tìm thấy tài khoản {{ accountId }}",
     "ExceedBalanceException": "Tài khoản {{ type }} của người dùng {{ userId }} vượt quá hạn mức cho phép",
     "InsufficientBalanceException": "Tài khoản {{ type }} của người dùng {{ userId }} không đủ số dư"
   }

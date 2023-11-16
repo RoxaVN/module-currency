@@ -1,6 +1,7 @@
 import { BadRequestException } from '@roxavn/core/base';
 import { InjectDatabaseService } from '@roxavn/core/server';
 import { sum, uniqWith } from 'lodash-es';
+import { In } from 'typeorm';
 
 import { serverModule } from '../module.js';
 import {
@@ -23,9 +24,8 @@ export class CreateTransactionService extends InjectDatabaseService {
     originalTransactionId?: string;
     metadata?: Record<string, any>;
     accounts: Array<{
-      userId: string;
+      accountId: string;
       amount: number | bigint;
-      type?: string;
     }>;
   }) {
     const total = sum(request.accounts.map((acc) => acc.amount));
@@ -34,20 +34,11 @@ export class CreateTransactionService extends InjectDatabaseService {
       throw new InvalidTotalTransactionAmountException();
     }
 
-    let requestAccounts = request.accounts.map((item) => ({
-      userId: item.userId,
-      amount: item.amount,
-      type: item.type || CurrencyAccount.TYPE_DEFAULT,
-      id: '',
-      newBalance: '',
-      oldBalance: '',
-    }));
-    requestAccounts = uniqWith(
-      requestAccounts,
-      (a, b) => a.userId === b.userId && a.type === b.type
-    );
     // check for duplicate accounts
-    if (requestAccounts.length !== request.accounts.length) {
+    if (
+      uniqWith(request.accounts, (a, b) => a.accountId === b.accountId)
+        .length !== request.accounts.length
+    ) {
       throw new BadRequestException();
     }
 
@@ -55,19 +46,18 @@ export class CreateTransactionService extends InjectDatabaseService {
       .getRepository(CurrencyAccount)
       .find({
         lock: { mode: 'pessimistic_write' },
-        where: requestAccounts.map((item) => ({
-          userId: item.userId,
-          currencyId: request.currencyId,
-          type: item.type,
-        })),
+        where: {
+          id: In(request.accounts.map((a) => a.accountId)),
+        },
       });
-    for (const requestAccount of requestAccounts) {
-      const account = accounts.find(
-        (a) =>
-          a.userId === requestAccount.userId && a.type === requestAccount.type
-      );
+
+    const accountTransactions: Array<AccountTransaction> = [];
+
+    for (const requestAccount of request.accounts) {
+      const account = accounts.find((a) => a.id === requestAccount.accountId);
       if (account) {
-        requestAccount.oldBalance = account.balance;
+        const accountTransaction = new AccountTransaction();
+        accountTransaction.oldBalance = account.balance;
         account.balance = (
           BigInt(account.balance) + BigInt(requestAccount.amount)
         ).toString();
@@ -77,37 +67,30 @@ export class CreateTransactionService extends InjectDatabaseService {
         if (account.maxBalance && account.balance > account.maxBalance) {
           throw new ExceedBalanceException(account.userId, account.type);
         }
-        requestAccount.id = account.id;
-        requestAccount.newBalance = account.balance;
+        accountTransaction.accountId = account.id;
+        accountTransaction.newBalance = account.balance;
+        accountTransaction.amount = requestAccount.amount.toString();
+        accountTransactions.push(accountTransaction);
       } else {
-        throw new AccountNotFoundException(
-          requestAccount.userId,
-          requestAccount.type
-        );
+        throw new AccountNotFoundException(requestAccount.accountId);
       }
     }
     const transaction = new Transaction();
     Object.assign(transaction, request);
 
-    await this.entityManager.save(transaction);
+    await this.entityManager.getRepository(Transaction).save(transaction);
 
-    const result = await this.entityManager
-      .createQueryBuilder(AccountTransaction, 'accountTransaction')
-      .insert()
-      .values(
-        requestAccounts.map((account) => ({
-          accountId: account.id,
-          transactionId: transaction.id,
-          amount: account.amount.toString(),
-          currencyId: request.currencyId,
-        }))
-      )
-      .returning(['id', 'accountId'])
-      .execute();
+    accountTransactions.forEach((at) => {
+      at.currencyId = request.currencyId;
+      at.transactionId = transaction.id;
+    });
+    await this.entityManager
+      .getRepository(AccountTransaction)
+      .insert(accountTransactions);
 
     // update balance of accounts
     await this.entityManager.getRepository(CurrencyAccount).save(accounts);
 
-    return result.raw;
+    return accountTransactions;
   }
 }

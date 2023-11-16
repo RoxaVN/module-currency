@@ -23,7 +23,21 @@ export class AccountNotFoundException extends NotFoundException {
     } as I18nErrorField,
   };
 
-  constructor(userId: string, type: string) {
+  constructor(accountId: string) {
+    super();
+    this.i18n.default.params = { accountId };
+  }
+}
+
+export class UserAccountNotFoundException extends NotFoundException {
+  i18n = {
+    default: {
+      key: 'Error.UserAccountNotFoundException',
+      ns: baseModule.escapedName,
+    } as I18nErrorField,
+  };
+
+  constructor(userId: string, type = 'default') {
     super();
     this.i18n.default.params = { userId, type };
   }
