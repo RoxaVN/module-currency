@@ -8,6 +8,7 @@ import {
   CreateUserApiService,
   GetUsersApiService,
 } from '@roxavn/module-user/server';
+import { groupBy } from 'lodash-es';
 import { Brackets, In } from 'typeorm';
 
 import { userCurrencyAccountApi } from '../../base/index.js';
@@ -95,6 +96,11 @@ export class GetUserCurrencyAccountsService extends InjectDatabaseService {
       type?: string;
     }>;
   }) {
+    const typeGroup = groupBy(
+      request.accounts,
+      (item) => item.type || CurrencyAccount.TYPE_DEFAULT
+    );
+
     const items = await this.entityManager
       .getRepository(CurrencyAccount)
       .createQueryBuilder('currencyAccount')
@@ -103,15 +109,15 @@ export class GetUserCurrencyAccountsService extends InjectDatabaseService {
       })
       .andWhere(
         new Brackets((qb) => {
-          request.accounts.map((account) => {
+          Object.entries(typeGroup).map(([type, accounts], index) => {
             qb.orWhere(
               new Brackets((qb1) => {
                 qb1
-                  .where('currencyAccount.userId = :userId', {
-                    userId: account.userId,
+                  .where(`currencyAccount.userId IN (:...userIds${index})`, {
+                    [`userIds${index}`]: accounts.map((acc) => acc.userId),
                   })
-                  .andWhere('currencyAccount.type = :type', {
-                    type: account.type || CurrencyAccount.TYPE_DEFAULT,
+                  .andWhere(`currencyAccount.type = :type${index}`, {
+                    [`type${index}`]: type,
                   });
               })
             );
