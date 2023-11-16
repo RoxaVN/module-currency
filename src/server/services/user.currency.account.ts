@@ -8,7 +8,7 @@ import {
   CreateUserApiService,
   GetUsersApiService,
 } from '@roxavn/module-user/server';
-import { In } from 'typeorm';
+import { Brackets, In } from 'typeorm';
 
 import { userCurrencyAccountApi } from '../../base/index.js';
 import { serverModule } from '../module.js';
@@ -83,5 +83,43 @@ export class CreateUserAndCurrencyAccountsService extends BaseService {
         )
       );
     }
+  }
+}
+
+@serverModule.injectable()
+export class GetUserCurrencyAccountsService extends InjectDatabaseService {
+  async handle(request: {
+    currencyId: string;
+    accounts: Array<{
+      userId: string;
+      type?: string;
+    }>;
+  }) {
+    const items = await this.entityManager
+      .getRepository(CurrencyAccount)
+      .createQueryBuilder('currencyAccount')
+      .where('currencyAccount.currencyId = :currencyId', {
+        currencyId: request.currencyId,
+      })
+      .andWhere(
+        new Brackets((qb) => {
+          request.accounts.map((account) => {
+            qb.orWhere(
+              new Brackets((qb1) => {
+                qb1
+                  .where('currencyAccount.userId = :userId', {
+                    userId: account.userId,
+                  })
+                  .andWhere('currencyAccount.type = :type', {
+                    type: account.type || CurrencyAccount.TYPE_DEFAULT,
+                  });
+              })
+            );
+          });
+        })
+      )
+      .getMany();
+
+    return { items };
   }
 }
