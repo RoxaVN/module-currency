@@ -14,11 +14,13 @@ export class GetAccountTransactionsApiService extends InjectDatabaseService {
     const [items, totalItems] = await this.entityManager
       .getRepository(AccountTransaction)
       .findAndCount({
+        relations: { transaction: true },
         where: {
           accountId: request.currencyAccountId,
         },
         take: pageSize,
         skip: (page - 1) * pageSize,
+        order: { transactionId: 'DESC' },
       });
 
     return {

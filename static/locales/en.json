@@ -1,6 +1,10 @@
 {
   "currencyId": "Currency id",
   "exchangeRate": "Exchange rate",
+  "transactions": "Transactions",
+  "amount": "Amount",
+  "oldBalance": "Old balance",
+  "newBalance": "New balance",
   "Meta": {
     "name": "Currency",
     "description": "Currency"

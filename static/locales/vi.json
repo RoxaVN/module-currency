@@ -1,6 +1,10 @@
 {
   "currencyId": "Id tiền tệ",
   "exchangeRate": "Tỷ giá",
+  "transactions": "Giao dịch",
+  "amount": "Số tiền",
+  "oldBalance": "Số dư cũ",
+  "newBalance": "Số dư mới",
   "Meta": {
     "name": "Module tiền tệ",
     "description": "Module tiền tệ"

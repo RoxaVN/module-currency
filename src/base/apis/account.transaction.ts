@@ -16,6 +16,8 @@ const accountTransactionSource = new ApiSource<{
   accountId: string;
   amount: string;
   currencyId: string;
+  oldBalance: string;
+  newBalance: string;
   createdDate: Date;
   transactionId: string;
   transaction: {
