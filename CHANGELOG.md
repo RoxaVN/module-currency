@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/RoxaVN/roxavn/compare/v0.1.1...v0.1.2) (2023-11-21)
+
+### Features
+
+- add AccountTransactions ([607d1f2](https://github.com/RoxaVN/roxavn/commit/607d1f2d42f4b97254d546446c9f8d34e1bc0295))
+- add admin page ([dd8ff23](https://github.com/RoxaVN/roxavn/commit/dd8ff237a71f2bf19e7e347b4b4cb3b4c923d0dd))
+- add CreateUserAndCurrencyAccountsService ([d36407e](https://github.com/RoxaVN/roxavn/commit/d36407ecc5d8ba76a854258a0fea2f7fcbcc88db))
+- add currencyId translation ([35190db](https://github.com/RoxaVN/roxavn/commit/35190db46b6c8557bfad09fd4460b1a71db509c0))
+- add GetUserCurrencyAccountsService ([6075536](https://github.com/RoxaVN/roxavn/commit/607553610169a79730ff4d7c51a9d79319dbe5bf))
+- add hook ([2393261](https://github.com/RoxaVN/roxavn/commit/239326192d87c812242ef1c20833fb2a8ceb2c40))
+- add oldBalance/ newBalance to account_transaction ([0e20739](https://github.com/RoxaVN/roxavn/commit/0e20739b25668fc5f4f73baf4eec0caf952cfac5))
+- convert transactionId from uuid to bigint ([f880f41](https://github.com/RoxaVN/roxavn/commit/f880f41994e1c46744adf727c627709399d7bcdb))
+- pass accountId instead of userId in request of CreateTransactionService ([b983d5a](https://github.com/RoxaVN/roxavn/commit/b983d5acf5ef7fdee045478403f0f40b00691104))
+
 ### [0.1.1](https://github.com/RoxaVN/roxavn/compare/v0.1.0...v0.1.1) (2023-11-11)
 
 ### Features
