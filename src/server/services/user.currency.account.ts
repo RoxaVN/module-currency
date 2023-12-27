@@ -67,23 +67,27 @@ export class CreateUserAndCurrencyAccountsService extends BaseService {
     currencyIds: string[];
     minBalance?: number;
   }) {
+    let userId: string;
     const { items } = await this.getUsersApiService.handle({
       username: request.username,
     });
-    if (!items.length) {
+    if (items.length) {
+      userId = items[0].id;
+    } else {
       const user = await this.createUserApiService.handle({
         username: request.username,
       });
-      await Promise.all(
-        request.currencyIds.map((CurrencyId) =>
-          this.createCurrencyAccountService.handle({
-            userId: user.id,
-            currencyId: CurrencyId,
-            minBalance: request.minBalance || null,
-          })
-        )
-      );
+      userId = user.id;
     }
+    await Promise.all(
+      request.currencyIds.map((CurrencyId) =>
+        this.createCurrencyAccountService.handle({
+          userId: userId,
+          currencyId: CurrencyId,
+          minBalance: request.minBalance || null,
+        })
+      )
+    );
   }
 }
 
