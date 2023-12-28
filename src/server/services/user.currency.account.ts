@@ -4,23 +4,20 @@ import {
   InjectDatabaseService,
   inject,
 } from '@roxavn/core/server';
-import {
-  CreateUserApiService,
-  GetUsersApiService,
-} from '@roxavn/module-user/server';
 import { groupBy } from 'lodash-es';
 import { Brackets, In } from 'typeorm';
 
 import { userCurrencyAccountApi } from '../../base/index.js';
 import { serverModule } from '../module.js';
 import { CurrencyAccount } from '../entities/index.js';
-import { CreateCurrencyAccountService } from './currency.account.js';
 
-@serverModule.useApi(userCurrencyAccountApi.getOrCreateMany)
-export class GetOrCreateUserCurrencyAccountsApiService extends InjectDatabaseService {
-  async handle(
-    request: InferApiRequest<typeof userCurrencyAccountApi.getOrCreateMany>
-  ) {
+@serverModule.injectable()
+export class GetOrCreateUserCurrencyAccountsService extends InjectDatabaseService {
+  async handle(request: {
+    userId: string;
+    currencyIds: string[];
+    minBalance: number | null | bigint;
+  }) {
     const items = await this.entityManager.getRepository(CurrencyAccount).find({
       where: {
         userId: request.userId,
@@ -34,7 +31,7 @@ export class GetOrCreateUserCurrencyAccountsApiService extends InjectDatabaseSer
         const account = new CurrencyAccount();
         account.userId = request.userId;
         account.currencyId = currencyId;
-        account.minBalance = '0';
+        account.minBalance = request.minBalance as any;
         newAccounts.push(account);
       }
     }
@@ -49,45 +46,22 @@ export class GetOrCreateUserCurrencyAccountsApiService extends InjectDatabaseSer
   }
 }
 
-@serverModule.injectable()
-export class CreateUserAndCurrencyAccountsService extends BaseService {
+@serverModule.useApi(userCurrencyAccountApi.getOrCreateMany)
+export class GetOrCreateUserCurrencyAccountsApiService extends BaseService {
   constructor(
-    @inject(CreateUserApiService)
-    public createUserApiService: CreateUserApiService,
-    @inject(GetUsersApiService)
-    public getUsersApiService: GetUsersApiService,
-    @inject(CreateCurrencyAccountService)
-    public createCurrencyAccountService: CreateCurrencyAccountService
+    @inject(GetOrCreateUserCurrencyAccountsService)
+    protected getOrCreateUserCurrencyAccountsService: GetOrCreateUserCurrencyAccountsService
   ) {
     super();
   }
 
-  async handle(request: {
-    username: string;
-    currencyIds: string[];
-    minBalance?: number;
-  }) {
-    let userId: string;
-    const { items } = await this.getUsersApiService.handle({
-      username: request.username,
+  handle(
+    request: InferApiRequest<typeof userCurrencyAccountApi.getOrCreateMany>
+  ) {
+    return this.getOrCreateUserCurrencyAccountsService.handle({
+      ...request,
+      minBalance: 0,
     });
-    if (items.length) {
-      userId = items[0].id;
-    } else {
-      const user = await this.createUserApiService.handle({
-        username: request.username,
-      });
-      userId = user.id;
-    }
-    await Promise.all(
-      request.currencyIds.map((CurrencyId) =>
-        this.createCurrencyAccountService.handle({
-          userId: userId,
-          currencyId: CurrencyId,
-          minBalance: request.minBalance || null,
-        })
-      )
-    );
   }
 }
 

@@ -1,5 +1,9 @@
 import { BadRequestException } from '@roxavn/core/base';
-import { InjectDatabaseService } from '@roxavn/core/server';
+import {
+  BaseService,
+  InjectDatabaseService,
+  inject,
+} from '@roxavn/core/server';
 import { sum, uniqWith } from 'lodash-es';
 import { In } from 'typeorm';
 
@@ -15,6 +19,7 @@ import {
   InsufficientBalanceException,
   InvalidTotalTransactionAmountException,
 } from '../../base/index.js';
+import { GetOrCreateUserCurrencyAccountsService } from './user.currency.account.js';
 
 @serverModule.injectable()
 export class CreateTransactionService extends InjectDatabaseService {
@@ -92,5 +97,69 @@ export class CreateTransactionService extends InjectDatabaseService {
     await this.entityManager.getRepository(CurrencyAccount).save(accounts);
 
     return accountTransactions;
+  }
+}
+
+@serverModule.injectable()
+export class CreateBankerTransactionService extends BaseService {
+  accounts: { [userId: string]: { [currencyId: string]: string } } = {};
+
+  constructor(
+    @inject(GetOrCreateUserCurrencyAccountsService)
+    protected getOrCreateUserCurrencyAccountsService: GetOrCreateUserCurrencyAccountsService,
+    @inject(CreateTransactionService)
+    protected createTransactionService: CreateTransactionService
+  ) {
+    super();
+  }
+
+  /**
+   * Auto create banker account and cache its id
+   */
+  async handle(request: {
+    currencyId: string;
+    type?: string;
+    originalTransactionId?: string;
+    metadata?: Record<string, any>;
+    account: {
+      accountId: string;
+      amount: number | bigint;
+    };
+    bankerUserId: string;
+  }) {
+    let user = this.accounts[request.bankerUserId];
+    if (!user) {
+      user = {};
+      this.accounts[request.bankerUserId] = user;
+    }
+    let bankerAccountId = user[request.currencyId];
+    if (!bankerAccountId) {
+      const { items } =
+        await this.getOrCreateUserCurrencyAccountsService.handle({
+          userId: request.bankerUserId,
+          currencyIds: [request.currencyId],
+          minBalance: null,
+        });
+      bankerAccountId = items[0].id;
+      user[request.currencyId] = bankerAccountId;
+    }
+
+    const transactions = await this.createTransactionService.handle({
+      currencyId: request.currencyId,
+      metadata: request.metadata,
+      originalTransactionId: request.originalTransactionId,
+      type: request.type,
+      accounts: [
+        request.account,
+        {
+          accountId: bankerAccountId,
+          amount: -request.account.amount,
+        },
+      ],
+    });
+
+    return transactions.find(
+      (t) => t.accountId === request.account.accountId
+    ) as AccountTransaction;
   }
 }
