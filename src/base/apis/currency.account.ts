@@ -1,10 +1,12 @@
 import {
   ApiSource,
+  ArrayMaxSize,
   ExactProps,
   IsOptional,
   Max,
   Min,
   MinLength,
+  TransformArray,
   TransformNumber,
 } from '@roxavn/core/base';
 
@@ -36,7 +38,21 @@ export class GetCurrencyAccountsRequest extends ExactProps<GetCurrencyAccountsRe
 
   @MinLength(1)
   @IsOptional()
+  public readonly type?: string;
+
+  @ArrayMaxSize(20)
+  @TransformArray()
+  @IsOptional()
+  public readonly userIds?: Array<string>;
+
+  @MinLength(1)
+  @IsOptional()
   public readonly currencyId?: string;
+
+  @ArrayMaxSize(20)
+  @TransformArray()
+  @IsOptional()
+  public readonly currencyIds?: Array<string>;
 
   @Min(1)
   @TransformNumber()
