@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/RoxaVN/roxavn/compare/v0.1.2...v0.1.3) (2024-01-03)
+
+### Features
+
+- add CreateBankerTransactionService ([a43533d](https://github.com/RoxaVN/roxavn/commit/a43533d52755efa6674875622148b039537e9b3b))
+- add userIds, currencyIds to GetCurrencyAccountsRequest ([294a9c6](https://github.com/RoxaVN/roxavn/commit/294a9c64070088909343deaf74b8ec303387d1da))
+
+### Bug Fixes
+
+- can't create currency accounts after create user ([ad8973a](https://github.com/RoxaVN/roxavn/commit/ad8973ac701b0a10ccb5ee56f5811a45b7b4b62e))
+
 ### [0.1.2](https://github.com/RoxaVN/roxavn/compare/v0.1.1...v0.1.2) (2023-11-21)
 
 ### Features
