@@ -81,13 +81,19 @@ export class CreateTransactionService extends InjectDatabaseService {
       }
     }
     const transaction = new Transaction();
-    Object.assign(transaction, request);
+    Object.assign(transaction, {
+      currencyId: request.currencyId,
+      type: request.type,
+      metadata: request.metadata,
+      originalTransactionId: request.originalTransactionId,
+    });
 
     await this.entityManager.getRepository(Transaction).save(transaction);
 
     accountTransactions.forEach((at) => {
       at.currencyId = request.currencyId;
       at.transactionId = transaction.id;
+      at.transaction = transaction;
     });
     await this.entityManager
       .getRepository(AccountTransaction)

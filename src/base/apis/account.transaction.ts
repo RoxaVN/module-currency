@@ -11,7 +11,7 @@ import {
 import { baseModule } from '../module.js';
 import { scopes, permissions } from '../access.js';
 
-const accountTransactionSource = new ApiSource<{
+export interface AccountTransactionResponse {
   id: string;
   accountId: string;
   amount: string;
@@ -26,7 +26,12 @@ const accountTransactionSource = new ApiSource<{
     type: string;
     metadata?: any;
   };
-}>([scopes.CurrencyAccount, scopes.Transaction], baseModule);
+}
+
+const accountTransactionSource = new ApiSource<AccountTransactionResponse>(
+  [scopes.CurrencyAccount, scopes.Transaction],
+  baseModule
+);
 
 class GetAccountTransactionsRequest extends ExactProps<GetAccountTransactionsRequest> {
   @MinLength(1)
