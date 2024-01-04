@@ -19,6 +19,7 @@ export const permissions = accessManager.makePermissions(scopes, {
       accessManager.scopes.ResourceOwner(scopes.CurrencyAccount.name),
     ],
   },
+  CreateTransaction: {},
 });
 
 export const roles = accessManager.makeRoles(scopes, permissions, {});
