@@ -1,13 +1,10 @@
 import {
   ApiSource,
   ArrayMaxSize,
-  ExactProps,
   IsOptional,
-  Max,
-  Min,
   MinLength,
+  PaginationRequest,
   TransformArray,
-  TransformNumber,
 } from '@roxavn/core/base';
 
 import { baseModule } from '../module.js';
@@ -31,7 +28,7 @@ const currencyAccountSource = new ApiSource<CurrencyAccountResponse>(
   baseModule
 );
 
-export class GetCurrencyAccountsRequest extends ExactProps<GetCurrencyAccountsRequest> {
+export class GetCurrencyAccountsRequest extends PaginationRequest<GetCurrencyAccountsRequest> {
   @MinLength(1)
   @IsOptional()
   public readonly userId?: string;
@@ -53,17 +50,6 @@ export class GetCurrencyAccountsRequest extends ExactProps<GetCurrencyAccountsRe
   @TransformArray()
   @IsOptional()
   public readonly currencyIds?: Array<string>;
-
-  @Min(1)
-  @TransformNumber()
-  @IsOptional()
-  public readonly page?: number;
-
-  @Min(1)
-  @Max(100)
-  @TransformNumber()
-  @IsOptional()
-  public readonly pageSize?: number;
 }
 
 export const currencyAccountApi = {

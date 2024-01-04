@@ -1,12 +1,4 @@
-import {
-  ApiSource,
-  ExactProps,
-  IsOptional,
-  Max,
-  Min,
-  MinLength,
-  TransformNumber,
-} from '@roxavn/core/base';
+import { ApiSource, MinLength, PaginationRequest } from '@roxavn/core/base';
 
 import { baseModule } from '../module.js';
 import { scopes, permissions } from '../access.js';
@@ -33,20 +25,9 @@ const accountTransactionSource = new ApiSource<AccountTransactionResponse>(
   baseModule
 );
 
-class GetAccountTransactionsRequest extends ExactProps<GetAccountTransactionsRequest> {
+class GetAccountTransactionsRequest extends PaginationRequest<GetAccountTransactionsRequest> {
   @MinLength(1)
   public readonly currencyAccountId: string;
-
-  @Min(1)
-  @TransformNumber()
-  @IsOptional()
-  public readonly page?: number;
-
-  @Min(1)
-  @Max(100)
-  @TransformNumber()
-  @IsOptional()
-  public readonly pageSize?: number;
 }
 
 export const accountTransactionApi = {
